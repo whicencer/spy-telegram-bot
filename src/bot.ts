@@ -6,7 +6,7 @@ import dedent from "dedent";
 import { getEnvVariable } from "./utils/getEnvVariable";
 import { UserRepository, IUserRepository } from "../database/User";
 import { IMessagesRepository, MessagesRepository } from "../database/Messages";
-import { TELEGRAM_MAX_MESSAGE_LENGTH } from "./constants/telegram";
+import { ResponseBuilder } from "./services/ResponseBuilder/ResponseBuilder";
 
 export default class BotInstance {
   private bot: Bot = new Bot(getEnvVariable("BOT_TOKEN"));
@@ -54,31 +54,11 @@ export default class BotInstance {
 				const { message_id, text: newMessageText } = ctx.editedBusinessMessage;
 				const oldMessage = await this.messagesCollection.getById(message_id);
 
-				if (newMessageText) {
+				if (newMessageText && ctx.from) {
 					await this.messagesCollection.messageEdited(message_id, oldMessage.text, newMessageText);
-		
-					const notifyUserMessage = dedent`
-					<b>User ${ctx.from?.first_name} edited message:</b>
 					
-					<b>Old message:</b>
-					<blockquote expandable>${oldMessage.text}</blockquote>
-		
-					<b>New message:</b>
-					<blockquote expandable>${newMessageText}</blockquote>
-					`;
-		
-					if (notifyUserMessage.length > TELEGRAM_MAX_MESSAGE_LENGTH) {
-						await ctx.api.sendMessage(
-							receiverId,
-							dedent`
-								<b>User ${ctx.from?.first_name} edited message:</b>\n
-								Message cannot be displayed, because it exceeds the limit of 4096 characters.
-							`,
-							{ parse_mode: "HTML" }
-						);
-					} else {
-						await ctx.api.sendMessage(receiverId, notifyUserMessage, { parse_mode: "HTML" });
-					}
+					const { text, parse_mode } = ResponseBuilder.buildEditedMessageResponse(ctx.from, oldMessage.text, newMessageText);
+					await ctx.api.sendMessage(receiverId, text, { parse_mode, link_preview_options: { is_disabled: true } });
 				}
 			}
 		} catch (error: any) {
