@@ -23,6 +23,7 @@ export default class BotInstance {
     this.bot.command("start", this.startCommandHandler);
 		this.bot.on("business_message", this.businessMessageHandler);
 		this.bot.on("edited_business_message", this.businessEditedMessageHandler);
+		this.bot.on("deleted_business_messages", this.deletedBusinessMessageHandler);
   }
 
 	private businessMessageHandler = async (ctx: Context) => {
@@ -49,12 +50,12 @@ export default class BotInstance {
 		try {
 			const businessConnectionId = ctx.editedBusinessMessage?.business_connection_id;
 
-			if (businessConnectionId && ctx.editedBusinessMessage) {
+			if (businessConnectionId && ctx.editedBusinessMessage && ctx.from) {
 				const { user_chat_id: receiverId } = await ctx.api.getBusinessConnection(businessConnectionId);
 				const { message_id, text: newMessageText } = ctx.editedBusinessMessage;
 				const oldMessage = await this.messagesCollection.getById(message_id);
 
-				if (newMessageText && ctx.from) {
+				if (newMessageText) {
 					await this.messagesCollection.messageEdited(message_id, oldMessage.text, newMessageText);
 					
 					const { text, parse_mode } = ResponseBuilder.buildEditedMessageResponse(ctx.from, oldMessage.text, newMessageText);
@@ -75,6 +76,29 @@ export default class BotInstance {
 				}
 			}
 			console.error("Error in businessEditedMessageHandler:", error.description);
+		}
+	}
+
+	private deletedBusinessMessageHandler = async (ctx: Context) => {
+		try {
+			const businessConnectionId = ctx.deletedBusinessMessages?.business_connection_id;
+
+			if (businessConnectionId && ctx.chat && ctx.deletedBusinessMessages) {
+				const { user_chat_id: receiverId } = await ctx.api.getBusinessConnection(businessConnectionId);
+				const { message_ids } = ctx.deletedBusinessMessages;
+
+				for (const messageId of message_ids) {
+					const deletedMessage = await this.messagesCollection.getById(messageId);
+					if (deletedMessage) {
+						await this.messagesCollection.setAttribute(messageId, "isDeleted", true);
+						const { text, parse_mode } = ResponseBuilder.buildDeletedMessageResponse(ctx.chat, deletedMessage.text);
+						await ctx.api.sendMessage(receiverId, text, { parse_mode, link_preview_options: { is_disabled: true } });
+					}
+					await new Promise(resolve => setTimeout(resolve, 500));
+				};
+			}
+		} catch (error: any) {
+			console.error("Error in deletedBusinessMessageHandler:", error.description);
 		}
 	}
 

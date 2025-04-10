@@ -1,5 +1,5 @@
 import dedent from "dedent";
-import { ParseMode, User } from "grammy/types";
+import { Chat, ParseMode, User } from "grammy/types";
 
 enum ActionTypes {
   DELETED = "deleted",
@@ -10,7 +10,7 @@ export class ResponseBuilder {
   private static TELEGRAM_MAX_MESSAGE_LENGTH = 4096;
 
   private static createMessage(
-    from: User,
+    from: User | Chat,
     messageContent: string,
     actionType: ActionTypes
   ): { text: string; parse_mode: ParseMode } {
@@ -46,12 +46,12 @@ export class ResponseBuilder {
     return this.createMessage(from, messageContent, ActionTypes.EDITED);
   }
 
-  public static buildDeletedMessageResponse(from: User, messageText: string): { text: string; parse_mode: ParseMode } {
+  public static buildDeletedMessageResponse(chat: Chat, messageText: string): { text: string; parse_mode: ParseMode } {
     const messageContent = dedent`
-      <b>User <a href="https://t.me/${from.username}">${from.first_name}</a> (<i>ID <code>${from.id}</code></i>) deleted message:</b>\n
+      <b>User <a href="https://t.me/${chat.username}">${chat.first_name}</a> (<i>ID <code>${chat.id}</code></i>) deleted message:</b>\n
       <blockquote expandable>${messageText}</blockquote>
     `;
 
-    return this.createMessage(from, messageContent, ActionTypes.DELETED);
+    return this.createMessage(chat, messageContent, ActionTypes.DELETED);
   }
 }
