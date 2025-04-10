@@ -7,6 +7,7 @@ import { getEnvVariable } from "./utils/getEnvVariable";
 import { UserRepository, IUserRepository } from "../database/User";
 import { IMessagesRepository, MessagesRepository } from "../database/Messages";
 import { ResponseBuilder } from "./services/ResponseBuilder/ResponseBuilder";
+import { sleep } from "./utils/sleep";
 
 export default class BotInstance {
   private bot: Bot = new Bot(getEnvVariable("BOT_TOKEN"));
@@ -91,10 +92,24 @@ export default class BotInstance {
 					const deletedMessage = await this.messagesCollection.getById(messageId);
 					if (deletedMessage) {
 						await this.messagesCollection.setAttribute(messageId, "isDeleted", true);
+						await this.messagesCollection.setAttribute(messageId, "deletedAt", Date.now());
+
 						const { text, parse_mode } = ResponseBuilder.buildDeletedMessageResponse(ctx.chat, deletedMessage.text);
-						await ctx.api.sendMessage(receiverId, text, { parse_mode, link_preview_options: { is_disabled: true } });
+						await ctx.api.sendMessage(
+							receiverId,
+							text,
+							{
+								reply_markup: {
+									inline_keyboard: [
+										[{ text: "👁 View messages", callback_data: "view_all_deleted_messages" }],
+									]
+								},
+								parse_mode,
+								link_preview_options: { is_disabled: true }
+							}
+						);
 					}
-					await new Promise(resolve => setTimeout(resolve, 500));
+					await sleep(500);
 				};
 			}
 		} catch (error: any) {

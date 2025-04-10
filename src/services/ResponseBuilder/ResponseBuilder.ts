@@ -50,6 +50,8 @@ export class ResponseBuilder {
     const messageContent = dedent`
       <b>User <a href="https://t.me/${chat.username}">${chat.first_name}</a> (<i>ID <code>${chat.id}</code></i>) deleted message:</b>\n
       <blockquote expandable>${messageText}</blockquote>
+
+      <i>To see all deleted messages from <b>${chat.first_name}</b>, click the button below</i>
     `;
 
     return this.createMessage(chat, messageContent, ActionTypes.DELETED);
