@@ -1,6 +1,7 @@
 import { Collection } from "mongodb";
-import { IUser, IUserRepository } from "./types";
+import { CreateUserDto, IUser, IUserRepository } from "./types";
 import { Database } from "../db";
+import { isLanguageCode } from "../../src/utils/isLanguageCode";
 
 export class UserRepository implements IUserRepository {
   private collection: Collection<IUser>;
@@ -23,14 +24,7 @@ export class UserRepository implements IUserRepository {
     }
   }
   
-  public async create(
-    userData: {
-      userId: number;
-      firstName: string;
-      lastName?: string;
-      username?: string;
-    }
-  ): Promise<void> {
+  public async create(userData: CreateUserDto): Promise<void> {
     const newUserData: IUser = {
       ...userData,
       createdAt: Date.now()

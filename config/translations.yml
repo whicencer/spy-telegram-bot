@@ -1,0 +1,48 @@
+en:
+  start_message: "Hello, {{firstName}}, I am a bot that notifies you when someone deletes or edits a message in private chats."
+  message_deleted_notification: "<b>User <a href=\"https://t.me/{{username}}\">{{firstName}}</a> (<i>ID <code>{{fromId}}</code></i>) deleted message:</b>\n
+    <blockquote expandable>{{messageText}}</blockquote>\n
+
+    <i>To see all deleted messages from <b>{{firstName}}</b>, click the button below</i>"
+  message_deleted_notification_wrong_length: "<b>User <a href=\"https://t.me/{{username}}\">{{firstName}}</a> (<i>ID <code>{{fromId}}</code></i>) deleted message:</b>\n\n
+    <i>Message cannot be displayed, because it exceeds the limit of 4096 characters.</i>"
+
+  message_edited_notification: "<b>User <a href=\"https://t.me/{{username}}\">{{firstName}}</a> (<i>ID <code>{{fromId}}</code></i>) edited message:</b>\n\n
+    <b>Old message:</b>
+    <blockquote expandable>{{oldMessageText}}</blockquote>\n\n
+    <b>New message:</b>
+    <blockquote expandable>{{messageText}}</blockquote>"
+  message_edited_notification_wrong_length: "<b>User <a href=\"https://t.me/{{username}}\">{{firstName}}</a> (<i>ID <code>{{fromId}}</code></i>) edited message:</b>\n\n
+    <i>Message cannot be displayed, because it exceeds the limit of 4096 characters.</i>"
+ru:
+  start_message: "Привет, {{firstName}}, я бот, который уведомляет вас, когда кто-то удаляет или редактирует сообщение в личных чатах."
+  message_deleted_notification: "<b>Пользователь <a href=\"https://t.me/{{username}}\">{{firstName}}</a> (<i>ID <code>{{fromId}}</code></i>) удалил сообщение:</b>\n
+    <blockquote expandable>{{messageText}}</blockquote>\n
+
+    <i>Чтобы посмотреть все удалённые сообщения от <b>{{firstName}}</b>, нажмите на кнопку ниже</i>"
+  message_deleted_notification_wrong_length: "<b>Пользователь <a href=\"https://t.me/{{username}}\">{{firstName}}</a> (<i>ID <code>{{fromId}}</code></i>) удалил сообщение:</b>\n\n
+    <i>Сообщение не может быть отображено, поскольку превышает лимит в 4096 символов.</i>"
+
+  message_edited_notification: "<b>Пользователь <a href=\"https://t.me/{{username}}\">{{firstName}}</a> (<i>ID <code>{{fromId}}</code></i>) изменил сообщение:</b>\n\n
+    <b>Старое сообщение:</b>
+    <blockquote expandable>{{oldMessageText}}</blockquote>\n\n
+    <b>Новое сообщение:</b>
+    <blockquote expandable>{{messageText}}</blockquote>"
+  message_edited_notification_wrong_length: "<b>Пользователь <a href=\"https://t.me/{{username}}\">{{firstName}}</a> (<i>ID <code>{{fromId}}</code></i>) изменил сообщение:</b>\n\n
+    <i>Сообщение не может быть отображено, поскольку превышает лимит в 4096 символов.</i>"
+ua:
+  start_message: "Привіт, {{firstName}}, я бот, який сповіщає вас, коли хтось видаляє або редагує повідомлення в особистих чатах."
+  message_deleted_notification: "<b>Користувач <a href=\"https://t.me/{{username}}\">{{firstName}}</a> (<i>ID <code>{{fromId}}</code></i>) видалив повідомлення:</b>\n
+    <blockquote expandable>{{messageText}}</blockquote>\n
+
+    <i>Щоб побачити всі видалені повідомлення від <b>{{firstName}}</b>, натисніть на кнопку нижче</i>"
+  message_deleted_notification_wrong_length: "<b>Користувач <a href=\"https://t.me/{{username}}\">{{firstName}}</a> (<i>ID <code>{{fromId}}</code></i>) видалив повідомлення:</b>\n\n
+    <i>Повідомлення не може бути відображено через перевищення ліміту у 4096 символів.</i>"
+
+  message_edited_notification: "<b>Користувач <a href=\"https://t.me/{{username}}\">{{firstName}}</a> (<i>ID <code>{{fromId}}</code></i>) редагував повідомлення:</b>\n\n
+    <b>Старе повідомлення:</b>
+    <blockquote expandable>{{oldMessageText}}</blockquote>\n\n
+    <b>Нове повідомлення:</b>
+    <blockquote expandable>{{messageText}}</blockquote>"
+  message_edited_notification_wrong_length: "<b>Користувач <a href=\"https://t.me/{{username}}\">{{firstName}}</a> (<i>ID <code>{{fromId}}</code></i>) редагував повідомлення:</b>\n\n
+    <i>Повідомлення не може бути відображено через перевищення ліміту у 4096 символів.</i>"

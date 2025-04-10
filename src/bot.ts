@@ -2,12 +2,14 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { Bot, Context } from "grammy";
-import dedent from "dedent";
 import { getEnvVariable } from "./utils/getEnvVariable";
 import { UserRepository, IUserRepository } from "../database/User";
 import { IMessagesRepository, MessagesRepository } from "../database/Messages";
 import { ResponseBuilder } from "./services/ResponseBuilder/ResponseBuilder";
 import { sleep } from "./utils/sleep";
+import { getTranslation } from "./utils/getTranslation";
+import { LanguageCodes, LanguageTranslationKeys } from "./types/Language";
+import { isLanguageCode } from "./utils/isLanguageCode";
 
 export default class BotInstance {
   private bot: Bot = new Bot(getEnvVariable("BOT_TOKEN"));
@@ -22,6 +24,8 @@ export default class BotInstance {
 
   private registerHandlers() {
     this.bot.command("start", this.startCommandHandler);
+		this.bot.callbackQuery(/start_choose_lang_\w{2,}/, this.startChooseLanguageHandler);
+		
 		this.bot.on("business_message", this.businessMessageHandler);
 		this.bot.on("edited_business_message", this.businessEditedMessageHandler);
 		this.bot.on("deleted_business_messages", this.deletedBusinessMessageHandler);
@@ -59,24 +63,17 @@ export default class BotInstance {
 				if (newMessageText) {
 					await this.messagesCollection.messageEdited(message_id, oldMessage.text, newMessageText);
 					
-					const { text, parse_mode } = ResponseBuilder.buildEditedMessageResponse(ctx.from, oldMessage.text, newMessageText);
+					const { text, parse_mode } = await ResponseBuilder.buildEditedMessageResponse(
+						ctx.from,
+						oldMessage.text,
+						newMessageText,
+						receiverId
+					);
 					await ctx.api.sendMessage(receiverId, text, { parse_mode, link_preview_options: { is_disabled: true } });
 				}
 			}
 		} catch (error: any) {
-			const { chat_id, parse_mode } = error.payload;
-			const errorDescription = error.description;
-
-			if (chat_id) {
-				switch (errorDescription) {
-					case "Bad Request: message is too long":
-						await ctx.api.sendMessage(chat_id, "Error: limit of 4096 characters exceeded", { parse_mode });
-						break;
-					default:
-						await ctx.api.sendMessage(chat_id, "Неизвестная ошибка", { parse_mode });
-				}
-			}
-			console.error("Error in businessEditedMessageHandler:", error.description);
+			console.error("Error in businessEditedMessageHandler:", error);
 		}
 	}
 
@@ -85,7 +82,7 @@ export default class BotInstance {
 			const businessConnectionId = ctx.deletedBusinessMessages?.business_connection_id;
 
 			if (businessConnectionId && ctx.chat && ctx.deletedBusinessMessages) {
-				const { user_chat_id: receiverId } = await ctx.api.getBusinessConnection(businessConnectionId);
+				const { user_chat_id } = await ctx.api.getBusinessConnection(businessConnectionId);
 				const { message_ids } = ctx.deletedBusinessMessages;
 
 				for (const messageId of message_ids) {
@@ -94,9 +91,9 @@ export default class BotInstance {
 						await this.messagesCollection.setAttribute(messageId, "isDeleted", true);
 						await this.messagesCollection.setAttribute(messageId, "deletedAt", Date.now());
 
-						const { text, parse_mode } = ResponseBuilder.buildDeletedMessageResponse(ctx.chat, deletedMessage.text);
+						const { text, parse_mode } = await ResponseBuilder.buildDeletedMessageResponse(ctx.chat, deletedMessage.text, user_chat_id);
 						await ctx.api.sendMessage(
-							receiverId,
+							user_chat_id,
 							text,
 							{
 								reply_markup: {
@@ -118,19 +115,69 @@ export default class BotInstance {
 	}
 
   private startCommandHandler = async (ctx: Context) => {
-		if (ctx.from) {
-			const isUserExists = await this.usersCollection.exists(ctx.from.id);
-			
-			if (!isUserExists) {
+		try {
+			if (ctx.from) {
+				const isUserExists = await this.usersCollection.exists(ctx.from.id);
+				
+				if (!isUserExists) {
+					await ctx.reply("Choose your language:", {
+						reply_markup: {
+							inline_keyboard: [
+								[{ text: "🇬🇧 English", callback_data: `start_choose_lang_${LanguageCodes.en}` }],
+								[{ text: "🇷🇺 Русский", callback_data: `start_choose_lang_${LanguageCodes.ru}` }],
+								[{ text: "🇺🇦 Українська", callback_data: `start_choose_lang_${LanguageCodes.ua}` }]
+							]
+						}
+					});
+				} else {
+					const greetingMessage = await getTranslation(
+						LanguageTranslationKeys.start_message,
+						{ firstName: ctx.from.first_name },
+						ctx.from.id
+					);
+
+					await ctx.reply(greetingMessage);
+				}
+			}
+		} catch (error: any) {
+			await ctx.reply("An error occurred while processing your request. Please try again later.");
+			console.error("Error in startCommandHandler:", error);
+		}
+  }
+
+	private startChooseLanguageHandler = async (ctx: Context) => {
+		try {
+			await ctx.deleteMessage();
+			if (ctx.callbackQuery?.data && ctx.from) {
+				const languageCode = ctx.callbackQuery.data.split("_").pop();
+	
+				if (!languageCode || !isLanguageCode(languageCode)) {
+					await ctx.answerCallbackQuery("Invalid language selected. Please try again.");
+					await ctx.reply("Invalid language selected. Please try again.");
+					return;
+				}
+	
 				await this.usersCollection.create({
 					userId: ctx.from.id,
 					firstName: ctx.from.first_name,
 					lastName: ctx.from.last_name,
 					username: ctx.from.username,
+					languageCode,
 				});
+	
+				const greetingMessage = await getTranslation(
+					LanguageTranslationKeys.start_message,
+					{ firstName: ctx.from.first_name },
+					ctx.from.id,
+					languageCode
+				);
+
+				await ctx.answerCallbackQuery("Language set successfully!");
+				await ctx.reply(greetingMessage);
 			}
-			
-			await ctx.reply("Hello! I am your bot.");
+		} catch (error) {
+			console.error("Error in startChooseLanguageHandler:", error);
+			await ctx.answerCallbackQuery("An error occurred while processing your request. Please try again later.");
 		}
-  }
+	}
 }

@@ -4,6 +4,8 @@ export interface IUser {
   lastName?: string;
   username?: string;
   
+  languageCode: string;
+
   createdAt: number;
   lastReceiveMessageAt?: number;
 }
@@ -11,6 +13,7 @@ export interface IUser {
 export interface CreateUserDto {
   userId: number;
   firstName: string;
+  languageCode: string;
   lastName?: string;
   username?: string;
 }
