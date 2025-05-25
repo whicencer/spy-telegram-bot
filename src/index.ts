@@ -1,4 +1,4 @@
-import BotInstance from "./src/bot";
+import BotInstance from "./bot";
 
 (async () => {
   const bot = new BotInstance();

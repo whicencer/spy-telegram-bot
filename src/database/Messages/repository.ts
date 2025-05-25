@@ -1,5 +1,5 @@
 import { Collection } from "mongodb";
-import { CreateMessageDto, IMessage, IMessagesRepository } from "./types";
+import { type CreateMessageDto, type IMessage, type IMessagesRepository } from "./types";
 import { Database } from "../db";
 
 export class MessagesRepository implements IMessagesRepository {

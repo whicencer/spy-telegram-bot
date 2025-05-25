@@ -1,7 +1,6 @@
 import { Collection } from "mongodb";
-import { CreateUserDto, IUser, IUserRepository } from "./types";
+import { type CreateUserDto, type IUser, type IUserRepository } from "./types";
 import { Database } from "../db";
-import { isLanguageCode } from "../../src/utils/isLanguageCode";
 
 export class UserRepository implements IUserRepository {
   private collection: Collection<IUser>;

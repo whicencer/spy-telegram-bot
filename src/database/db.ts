@@ -1,5 +1,5 @@
 import { Db, MongoClient } from "mongodb";
-import { getEnvVariable } from "../src/utils/getEnvVariable";
+import { getEnvVariable } from "../utils/getEnvVariable";
 
 export class Database {
   private client: MongoClient = new MongoClient(getEnvVariable("MONGODB_URL"));

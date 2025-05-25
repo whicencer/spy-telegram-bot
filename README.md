@@ -16,4 +16,7 @@ As long as we don't know what the developers' intentions are, we shouldn't trust
 
 That's exactly why I created this bot and shared it on GitHub for free: so anyone can set it up themselves and stay fully in control of their privacy.  
 
+## Installation
+
+
 **only for Telegram Premium users**
