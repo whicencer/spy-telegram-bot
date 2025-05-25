@@ -5,9 +5,7 @@ A Telegram bot that notifies you when someone edits or deletes messages in your 
 ## Features
 
 - Tracks message edits and deletions in private chats
-- Sends instant notifications when messages are modified
-- Preserves original message content for reference
-- Simple setup and configuration
+- Sends instant notifications when messages are deleted or modified
 
 ## Inspiration
 I see that many Telegram users rely on third-party bots to track their private conversations: message deletions/edits/etc. But it's still unclear how all these bots work under the hood or what kind of data they collect about users.
@@ -16,7 +14,15 @@ As long as we don't know what the developers' intentions are, we shouldn't trust
 
 That's exactly why I created this bot and shared it on GitHub for free: so anyone can set it up themselves and stay fully in control of their privacy.  
 
-## Installation
+## Installation guide
+#### To install and run the bot you need only installed Docker and Docker Compose on your machine
+- Create a bot using [BotFather](https://t.me/BotFather)
+- Create `.env` file and paste the bot token BotFather gave you:
+```
+BOT_TOKEN=your_token
+```
+- Open terminal and run `docker-compose up --build` (add `-d` flag to run in detached mode)
+- Open dialog with your bot and click **«Start»** button
+- Further instructions will be provided within a bot
 
-
-**only for Telegram Premium users**
+***P.S. only for Telegram Premium users**

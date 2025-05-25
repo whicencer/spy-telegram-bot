@@ -27,6 +27,7 @@ export default class BotInstance {
 		this.bot.on("business_message", this.businessMessageHandler);
 		this.bot.on("edited_business_message", this.businessEditedMessageHandler);
 		this.bot.on("deleted_business_messages", this.deletedBusinessMessageHandler);
+		this.bot.on("business_connection:is_enabled", this.businessConnectionHandler);
   }
 
 	private businessMessageHandler = async (ctx: Context) => {
@@ -93,6 +94,22 @@ export default class BotInstance {
 		}
 	}
 
+	private businessConnectionHandler = async (ctx: Context) => {
+		const businessConnectionId = ctx.businessConnection?.id;
+
+		if (ctx.businessConnection) {
+			try {
+				await this.bot.api.sendMessage(
+					ctx.businessConnection.user_chat_id,
+					`🥳 Your business connection with ID <code>${businessConnectionId}</code> has been established successfully.`,
+					{ parse_mode: "HTML" }
+				);
+			} catch (error) {
+				console.error("Error in businessConnectionHandler:", error);
+			}
+		}
+	}
+
 	private deletedBusinessMessageHandler = async (ctx: Context) => {
 		const businessConnectionId = ctx.deletedBusinessMessages?.business_connection_id;
 
@@ -130,13 +147,25 @@ export default class BotInstance {
   private startCommandHandler = async (ctx: Context) => {
 		if (ctx.from) {
 			try {
+				const botMe = await ctx.api.getMe();
+
 				await this.usersCollection.create({
 					userId: ctx.from.id,
 					firstName: ctx.from.first_name,
 					lastName: ctx.from.last_name,
 					username: ctx.from.username,
 				});
-				await ctx.reply("Привет! Я бот, который уведомляет вас, когда кто-то удаляет или редактирует сообщения в личных чатах.");
+				await ctx.reply(
+					dedent`
+						Hello! I'm the bot which notificate you if someone deletes or modifies messages in personal chats.
+
+						Set up instructions:
+						1. Open settings
+						2. Go to <i>Telegram Business -> Chatbots</i>
+						3. Set me (@${botMe.username}) as a chatbot
+					`,
+					{ parse_mode: "HTML" }
+				);
 			} catch (error: any) {
 				await ctx.reply("An error occurred while processing your request. Please try again later.");
 				console.error("Error in startCommandHandler:", error);
