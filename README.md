@@ -6,6 +6,7 @@ A Telegram bot that notifies you when someone edits or deletes messages in your 
 
 - Tracks message edits and deletions in private chats
 - Sends instant notifications when messages are deleted or modified
+- In-dialog commands support (`/help` in bot to get the full list)
 
 ## Inspiration
 I see that many Telegram users rely on third-party bots to track their private conversations: message deletions/edits/etc. But it's still unclear how all these bots work under the hood or what kind of data they collect about users.

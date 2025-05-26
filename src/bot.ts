@@ -21,7 +21,7 @@ export default class BotInstance {
 
   private registerHandlers() {
     this.bot.command("start", this.startCommandHandler);
-		// this.bot.command("help", this)
+		this.bot.command("help", this.helpCommandHandler);
 		
 		updateHandlers.forEach(handler => {
 			const middlewares = handler.middlewares ?? [];
@@ -63,10 +63,11 @@ export default class BotInstance {
 	private async helpCommandHandler(ctx: Context) {
 		await ctx.reply(
 			dedent`
-				Available commands in chats (use only in personal chats):
+				Available commands (use only in personal chats):
 
-				.listed_gifts – List of all user's gifts listed on Tonnel Marketplace.
-			`
+				<i><code>.listed_gifts</code> – List of all user's gifts listed on Tonnel Marketplace.</i>
+			`,
+			{ parse_mode: "HTML" }
 		);
 	}
 }
