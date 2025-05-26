@@ -20,8 +20,8 @@ export default class BotInstance {
   }
 
   private registerHandlers() {
-    this.bot.command("start", this.startCommandHandler);
-		this.bot.command("help", this.helpCommandHandler);
+    this.bot.command("start", (ctx: Context) => this.startCommandHandler(ctx));
+		this.bot.command("help", (ctx: Context) => this.helpCommandHandler(ctx));
 		
 		updateHandlers.forEach(handler => {
 			const middlewares = handler.middlewares ?? [];
@@ -44,12 +44,13 @@ export default class BotInstance {
 				await ctx.reply(
 					dedent`
 						Hello! I'm the bot which notificate you if someone deletes or modifies messages in personal chats.
-						Run /help to see available commands in chats.
-
+						
 						Set up instructions:
 						1. Open settings
 						2. Go to <i>Telegram Business -> Chatbots</i>
 						3. Set me (@${botMe.username}) as a chatbot
+
+						Run /help to see available in-dialog commands.
 					`,
 					{ parse_mode: "HTML" }
 				);
