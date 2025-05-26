@@ -23,12 +23,17 @@ export class MessagesRepository implements IMessagesRepository {
     return newMessage;
   }
 
-  public async getById(messageId: number): Promise<IMessage> {
+  public async getById(messageId: number, throwError: boolean = false): Promise<IMessage | null> {
     const message = await this.collection.findOne({ messageId });
 
     if (!message) {
-      throw new Error(`Message with id ${messageId} does not exist`);
+      if (!throwError) {
+        throw new Error(`Message with id ${messageId} does not exist`);
+      }
+
+      return null;
     }
+
     return message;
   }
 
@@ -45,7 +50,7 @@ export class MessagesRepository implements IMessagesRepository {
     }
   }
 
-  public async setAttribute(messageId: number, key: string, value: any, returnResult: boolean = false): Promise<IMessage | void> {
+  public async setAttribute(messageId: number, key: string, value: any, returnResult: boolean = false): Promise<IMessage | void | null> {
     await this.exists(messageId, true);
     await this.collection.updateOne({ messageId }, { $set: { [key]: value } });
 

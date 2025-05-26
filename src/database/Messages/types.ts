@@ -28,8 +28,8 @@ export interface CreateMessageDto {
 
 export interface IMessagesRepository {
   create(message: CreateMessageDto): Promise<IMessage>;
-  getById(messageId: number): Promise<IMessage>;
-  setAttribute(messageId: number, key: string, value: any, returnResult?: boolean): Promise<IMessage | void>;
+  getById(messageId: number, throwError?: boolean): Promise<IMessage | null>;
+  setAttribute(messageId: number, key: string, value: any, returnResult?: boolean): Promise<IMessage | void | null>;
   exists(userId: number, throwError: boolean): Promise<boolean>;
   messageEdited(messageId: number, oldMessageText: string, newMessageText: string): Promise<void>;
 }
