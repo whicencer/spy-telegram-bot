@@ -1,5 +1,6 @@
 import { Context } from "grammy";
 import { listedGiftsHandler } from "./listedGifts";
+import { getUserId } from "./getUserId";
 
 export async function userCommandsHandler(ctx: Context, next: () => void) {
   const { user_chat_id } = await ctx.getBusinessConnection();
@@ -11,6 +12,9 @@ export async function userCommandsHandler(ctx: Context, next: () => void) {
     switch (command) {
       case ".listed_gifts":
         await listedGiftsHandler(ctx, businessMessage.chat.id);
+        break;
+      case ".id":
+        await getUserId(ctx);
         break;
       default:
         return;

@@ -8,7 +8,7 @@ export class BusinessMessageHandler implements IUpdateHandler {
   private usersCollection: IUserRepository = new UserRepository();
   private messagesCollection: IMessagesRepository = new MessagesRepository();
 
-  public updateName: FilterQuery | FilterQuery[] = "business_message";
+  public updateName: FilterQuery = "business_message:text";
 
   public middlewares?: Middleware<Context>[] = [userCommandsHandler];
 

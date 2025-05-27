@@ -1,6 +1,7 @@
 export interface IMessage {
   messageId: number;
   text: string;
+  media?: string;
   userId: number;
 
   senderId: number;
@@ -9,6 +10,7 @@ export interface IMessage {
 
   isEdited: boolean;
   isDeleted: boolean;
+  hasMedia: boolean;
 
   editedAt?: number;
   deletedAt?: number;
@@ -20,6 +22,7 @@ export interface IMessage {
 export interface CreateMessageDto {
   messageId: number;
   text: string;
+  media?: string;
   userId: number;
   senderId: number;
   senderName: string;

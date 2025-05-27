@@ -15,6 +15,7 @@ export class MessagesRepository implements IMessagesRepository {
       ...newMessageData,
       isEdited: false,
       isDeleted: false,
+      hasMedia: !!newMessageData.media,
       sentAt: Date.now(),
       editedMessages: []
     };
