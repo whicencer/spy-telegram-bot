@@ -21,6 +21,7 @@ export default class BotInstance {
 
   private registerHandlers() {
     this.bot.command("start", (ctx: Context) => this.startCommandHandler(ctx));
+		this.bot.command("donate", (ctx: Context) => this.donateCommandHandler(ctx));
 		this.bot.command("help", (ctx: Context) => this.helpCommandHandler(ctx));
 		
 		updateHandlers.forEach(handler => {
@@ -60,6 +61,29 @@ export default class BotInstance {
 			}
 		}
   }
+
+	private async donateCommandHandler(ctx: Context) {
+		const donationAmountStr = ctx.match;
+		const donationAmount = Number(donationAmountStr);
+
+		if (isNaN(donationAmount) || donationAmount <= 1) {
+			await ctx.reply("Please provide a valid donation amount. Try again.\n<code>/donate 25</code>", {
+				parse_mode: "HTML",
+			});
+			return;
+		}
+
+		if (ctx.chat) {
+			await ctx.api.sendInvoice(
+				ctx.chat.id,
+				"Donation to bot",
+				"Support bot",
+				"donation",
+				"XTR",
+				[{ label: "Support bot", amount: donationAmount }]
+			);
+		}
+	}
 
 	private async helpCommandHandler(ctx: Context) {
 		await ctx.reply(

@@ -21,7 +21,7 @@
   "dependencies": {
     "dedent": "^1.5.3",
     "dotenv": "^16.4.7",
-    "grammy": "^1.35.1",
+    "grammy": "^1.36.3",
     "mongodb": "^6.15.0"
   }
 }
